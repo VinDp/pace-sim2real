@@ -1,0 +1,42 @@
+services:
+  pace:
+    image: pace-sim2real:isaaclab-2.3.2
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    container_name: pace-sim2real
+    network_mode: host
+    ipc: host
+    stdin_open: true
+    tty: true
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    environment:
+      # X11 forwarding for the Isaac Sim GUI (run `xhost +local:root` on the host first)
+      - DISPLAY=${DISPLAY:-:0}
+    volumes:
+      # Live source code, data and logs
+      - ..:/workspace/pace-sim2real
+      - /tmp/.X11-unix:/tmp/.X11-unix:rw
+      # Persist Isaac Sim caches so shader compilation happens only once
+      - isaac-cache-kit:/isaac-sim/kit/cache:rw
+      - isaac-cache-ov:/root/.cache/ov:rw
+      - isaac-cache-pip:/root/.cache/pip:rw
+      - isaac-cache-gl:/root/.cache/nvidia/GLCache:rw
+      - isaac-cache-compute:/root/.nv/ComputeCache:rw
+      - isaac-logs:/root/.nvidia-omniverse/logs:rw
+      - isaac-data:/root/.local/share/ov/data:rw
+
+volumes:
+  isaac-cache-kit:
+  isaac-cache-ov:
+  isaac-cache-pip:
+  isaac-cache-gl:
+  isaac-cache-compute:
+  isaac-logs:
+  isaac-data:
