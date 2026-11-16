@@ -48,6 +48,22 @@ Using a Python interpreter that has Isaac Lab installed:
 # if Isaac Lab is not installed in a Python venv or conda environment
 python -m pip install -e source/pace_sim2real
 ```
+### 🐳 Alternative: Docker
+
+A container based on the official `nvcr.io/nvidia/isaac-lab:2.3.2` image (Isaac Sim 5.1) is provided in `docker/`.
+It requires the NVIDIA Container Toolkit. The repository is mounted into the container, so code, `data/` and `logs/` are shared with the host.
+
+```bash
+./docker/container.sh build      # build the image (once)
+./docker/container.sh start      # start the container in the background
+./docker/container.sh enter      # open a shell inside it
+python scripts/pace/fit.py --headless
+./docker/container.sh fix-perms  # give files written by the container back to your user
+./docker/container.sh stop
+```
+
+Inside the container, `python` is the Isaac Sim interpreter. Drop `--headless` to use the GUI; `start` runs `xhost +local:root` for you.
+
 ### ⚠️ Isaac Sim version compatibility
 
 PACE is developed and tested against **Isaac Sim 5.0 / Isaac Lab (latest)**.
