@@ -73,3 +73,5 @@ tests/
 
 # PACE specific
 **/data/*
+# Generated robot assets (see scripts/dynaarm/build_usd.py)
+source/pace_sim2real/pace_sim2real/assets/dynaarm/

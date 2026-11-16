@@ -19,6 +19,13 @@ RUN printf '#!/bin/bash\nexec /isaac-sim/python.sh "$@"\n' > /usr/local/bin/pyth
 COPY source/pace_sim2real ${PACE_PATH}/source/pace_sim2real
 RUN python -m pip install --no-cache-dir -e ${PACE_PATH}/source/pace_sim2real
 
+# xacro renders robot descriptions (e.g. the DynaArm) to URDF before USD conversion,
+# git-lfs fetches their meshes
+RUN apt-get update && apt-get install -y --no-install-recommends git-lfs \
+    && rm -rf /var/lib/apt/lists/* \
+    && git lfs install --system
+RUN python -m pip install --no-cache-dir xacro
+
 WORKDIR ${PACE_PATH}
 ENTRYPOINT []
 CMD ["/bin/bash"]
