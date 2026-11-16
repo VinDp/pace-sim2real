@@ -62,6 +62,10 @@ def main():
     time_data = data["time"].to(env.unwrapped.device)
     target_dof_pos = data["des_dof_pos"].to(env.unwrapped.device)
     measured_dof_pos = data["dof_pos"].to(env.unwrapped.device)
+    # optional velocity reference, used by the PD controller when the real controller also received one
+    target_dof_vel = data["des_dof_vel"].to(env.unwrapped.device) if "des_dof_vel" in data else None
+    if target_dof_vel is not None:
+        print("[INFO]: Using the velocity reference (des_dof_vel) of the data as joint velocity target.")
 
     initial_dof_pos = measured_dof_pos[0, :].unsqueeze(0).repeat(env.unwrapped.num_envs, 1)
 
@@ -95,6 +99,8 @@ def main():
             opt.tell(env.unwrapped.scene.articulations["robot"].data.joint_pos[:, sim_joint_ids], measured_dof_pos[counter, :].unsqueeze(0).repeat(env.unwrapped.num_envs, 1))
             actions = torch.zeros(env.action_space.shape, device=env.unwrapped.device)
             actions[:, sim_joint_ids] = target_dof_pos[counter, :].unsqueeze(0).repeat(env.unwrapped.num_envs, 1)
+            if target_dof_vel is not None:
+                articulation.set_joint_velocity_target(target_dof_vel[counter, :].unsqueeze(0).repeat(env.unwrapped.num_envs, 1), joint_ids=sim_joint_ids)
             # apply actions
             env.step(actions)
             counter += 1
