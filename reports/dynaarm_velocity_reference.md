@@ -121,7 +121,8 @@ parameter is fitted**. The results at armature 1e-2 kg·m² are almost identical
 issue affects that joint. Candidates, still to be checked:
 
 - the 40 Nm torque limit: the real controller commanded up to 59 Nm on this joint, for about
-  3 s inside the window, and it's not clear whether the drive clamped it
+  3 s inside the window. This turned out to be the cause: with the 120 Nm limit of the latest
+  Duatic description, the fitted `shoulder_flexion` error drops from 0.034 to 0.014 rad RMS.
 - the gravity load or masses
 
 This is a likely explanation for the earlier fits that never converged and kept driving
@@ -195,7 +196,9 @@ same control law. That rule also applies to the other recording conditions, whic
 task config already matches:
 
 - P/D gains: 80/2 and 60/1
-- torque limit: 40 Nm on all joints, as the driver used during recording
+- torque limit: 120 Nm (shoulder, elbow) and 40 Nm (wrist joints), as in the latest Duatic
+  description. A fit with 40 Nm on all joints underestimated the `shoulder_flexion` resonance
+  (RMS error 0.034 vs. 0.014 rad), so the drive did not clamp at 40 Nm during recording.
 - no gravity compensation, gravity on in the simulation
 - 400 Hz `sim.dt`
 

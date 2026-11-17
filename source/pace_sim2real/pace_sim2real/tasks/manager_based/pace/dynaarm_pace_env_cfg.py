@@ -25,12 +25,20 @@ _VELOCITY_LIMIT = {
     "wrist_rotation": 13.647,
 }
 
-# Gains and limits match the recording setup: ros2_control pid_controller at 1 kHz on the effort interface,
-# without feed-forward or gravity compensation, and a 40 Nm torque limit on all joints in the driver
+# Gains match the recording setup: ros2_control pid_controller at 1 kHz on the effort interface,
+# without feed-forward or gravity compensation
 DYNAARM_PACE_ACTUATOR_CFG = PaceDCMotorCfg(
     joint_names_expr=[".*"],
     saturation_effort=120.0,  # peak torque of the shoulder and elbow drives (Duatic)
-    effort_limit=40.0,
+    # torque limits from Duatic/duatic_dynaarm (duatic_dynaarm_description, baracuda12)
+    effort_limit={
+        "shoulder_rotation": 120.0,
+        "shoulder_flexion": 120.0,
+        "elbow_flexion": 120.0,
+        "forearm_rotation": 40.0,
+        "wrist_flexion": 40.0,
+        "wrist_rotation": 40.0,
+    },
     velocity_limit=_VELOCITY_LIMIT,
     # set explicitly, otherwise the PhysX joint velocity limit is taken from the USD
     velocity_limit_sim=_VELOCITY_LIMIT,
